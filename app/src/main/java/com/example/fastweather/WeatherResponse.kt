@@ -1,17 +1,23 @@
 package com.example.fastweather
 
 data class WeatherResponse(
-    val weather: List<Weather>,
-    val main: Main,
-    val name: String
+    val location: Location,
+    val current: Current
 )
 
-data class Weather(
-    val description: String,
+data class Location(
+    val name: String,
+    val region: String,
+    val country: String
+)
+
+data class Current(
+    val temp_c: Double,
+    val condition: Condition,
+    val humidity: Int
+)
+
+data class Condition(
+    val text: String,
     val icon: String
-)
-
-data class Main(
-    val temp: Double,
-    val humiditiy: Int
 )
