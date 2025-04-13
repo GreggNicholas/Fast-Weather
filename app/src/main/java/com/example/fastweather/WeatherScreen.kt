@@ -1,0 +1,62 @@
+package com.example.fastweather
+
+import android.annotation.SuppressLint
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import coil.compose.rememberAsyncImagePainter
+
+class WeatherScreen {
+    @SuppressLint("NotConstructor")
+    @Composable
+    fun WeatherScreen(viewModel: WeatherViewModel, apiKey: String) {
+        var city by remember { mutableStateOf("") }
+
+        Column(modifier = Modifier.padding(16.dp)) {
+            OutlinedTextField(
+                value = city,
+                onValueChange = { city = it },
+                label = { Text("Enter city") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Button(
+                onClick = { viewModel.fetchWeather(city, apiKey) },
+                modifier = Modifier.padding(top = 8.dp)
+            ) {
+                Text("Get Weather")
+            }
+
+            viewModel.weather?.let { weather ->
+                Text("Location: ${weather.location.name}, ${weather.location.country}")
+                Text("Temp: ${weather.current.temp_c}°C")
+                Text("Condition: ${weather.current.condition.text}")
+                Text("Humidity: ${weather.current.humidity}%")
+
+                Image(
+                    painter = rememberAsyncImagePainter("https:${weather.current.condition.icon}"),
+                    contentDescription = "Weather Icon",
+                    modifier = Modifier.size(64.dp)
+                )
+            }
+
+            viewModel.errorMessage?.let { error ->
+                Text("Error: $error", color = Color.Red)
+            }
+        }
+    }
+
+}
