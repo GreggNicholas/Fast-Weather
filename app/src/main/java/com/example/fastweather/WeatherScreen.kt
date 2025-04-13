@@ -1,6 +1,4 @@
 package com.example.fastweather
-
-import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,8 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 
-class WeatherScreen {
-    @SuppressLint("NotConstructor")
+
     @Composable
     fun WeatherScreen(viewModel: WeatherViewModel, apiKey: String) {
         var city by remember { mutableStateOf("") }
@@ -58,5 +55,3 @@ class WeatherScreen {
             }
         }
     }
-
-}
