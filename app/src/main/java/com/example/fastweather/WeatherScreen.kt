@@ -39,7 +39,7 @@ import coil.compose.rememberAsyncImagePainter
 
             viewModel.weather?.let { weather ->
                 Text("Location: ${weather.location.name}, ${weather.location.country}")
-                Text("Temp: ${weather.current.temp_c}°C")
+                Text("Temp: ${weather.current.temp_f}°F")
                 Text("Condition: ${weather.current.condition.text}")
                 Text("Humidity: ${weather.current.humidity}%")
 
