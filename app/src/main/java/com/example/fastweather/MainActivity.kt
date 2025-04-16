@@ -14,11 +14,11 @@ class MainActivity : ComponentActivity() {
     private val viewModel = WeatherViewModel()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val apiKey ="85494a9c85d34806b2705718250904"
+        val apiKey = "85494a9c85d34806b2705718250904"
         enableEdgeToEdge()
         setContent {
             WeatherScreen(viewModel = viewModel, apiKey = apiKey)
-            }
+        }
     }
 }
 
