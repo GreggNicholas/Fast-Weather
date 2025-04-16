@@ -8,21 +8,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 
 
-class WeatherViewModel:ViewModel() {
+class WeatherViewModel : ViewModel() {
     var weather by mutableStateOf<WeatherResponse?>(null)
         private set
     var errorMessage by mutableStateOf<String?>(null)
 
-    fun fetchWeather(city:String, apiKey:String) {
+    fun fetchWeather(city: String, apiKey: String) {
         viewModelScope.launch {
             try {
-                val response = RetrofitClient.weatherAPIService.getCurrentWeather(apiKey,city)
-            weather = response
+                val response = RetrofitClient.weatherAPIService.getCurrentWeather(apiKey, city)
+                weather = response
                 errorMessage = null
-            } catch (e: Exception){
+            } catch (e: Exception) {
                 errorMessage = "Could not fetch weather: &{e.message}"
             }
         }
-
     }
 }
