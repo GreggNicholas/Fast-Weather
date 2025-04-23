@@ -1,5 +1,8 @@
 package com.example.fastweather
 
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -38,21 +41,31 @@ fun WeatherScreen(
     val context = LocalContext.current
     var city by remember { mutableStateOf("") }
 
-    // 1) Kick off location lookup once on first composition
-    LaunchedEffect(Unit) {
-        getLastKnownCity(context) { detectedCity ->
-            detectedCity?.let { city = it }
+    // prepare a launcher in Compose
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            // fetch the location and write into `city`
+            getLastKnownCity(context) { detected ->
+                detected?.let { city = it }
+            }
         }
     }
+    // Kick off location lookup once on first composition
+    LaunchedEffect(Unit) {
+        permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+    }
 
-    // 2) Provide a white content color, then draw your background + content
+
+    //  Provide a white content color, then draw your background + content
     CompositionLocalProvider(LocalContentColor provides Color.White) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black)
         ) {
-            // 3) All your UI goes *inside* the Box’s lambda
+            //  All UI goes inside the Box’s lambda
             Column(
                 modifier = Modifier
                     .padding(16.dp)
@@ -68,8 +81,8 @@ fun WeatherScreen(
                 )
 
                 OutlinedTextField(
-                    value = city,
-                    onValueChange = { city = it },
+                    value = city, //autofill based on location permissions
+                    onValueChange = { city = it },  // user can still edit autofill
                     placeholder = { Text("Enter City", color = Color.LightGray) },
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = Color.White,
