@@ -13,8 +13,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -56,7 +60,16 @@ fun WeatherScreen(
     LaunchedEffect(Unit) {
         permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
     }
-
+    viewModel.recentCities.forEach { city ->
+        Button(
+            onClick = { viewModel.getWeatherForCity(city, apiKey) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp)
+        ) {
+            Text(text = city)
+        }
+    }
 
     //  Provide a white content color, then draw your background + content
     CompositionLocalProvider(LocalContentColor provides Color.White) {
@@ -70,7 +83,8 @@ fun WeatherScreen(
                 modifier = Modifier
                     .padding(16.dp)
                     .align(Alignment.Center)
-            ) {
+            )
+            {
                 // City image
                 Image(
                     painter = painterResource(id = R.drawable.weathercity),
@@ -79,7 +93,25 @@ fun WeatherScreen(
                         .fillMaxWidth()
                         .height(500.dp)       // lower height so it doesn’t push everything off
                 )
+                Text(
+                    text = "Recent Cities",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = Color.White
+                )
 
+                LazyRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                ) {
+                    items(viewModel.recentCities) { cityName ->
+                        AssistChip(
+                            onClick = { viewModel.getWeatherForCity(cityName, apiKey) },
+                            label = { Text(text = cityName, color = Color.Green) },
+                            modifier = Modifier.padding(horizontal = 4.dp)
+                        )
+                    }
+                }
                 OutlinedTextField(
                     value = city, //autofill based on location permissions
                     onValueChange = { city = it },  // user can still edit autofill
