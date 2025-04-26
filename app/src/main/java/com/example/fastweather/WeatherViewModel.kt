@@ -30,14 +30,14 @@ class WeatherViewModel(private val context: Context) : ViewModel() { // <-- cont
     }
 
     fun fetchWeather(city: String, apiKey: String) {
-        visitCity(city)
         viewModelScope.launch {
             try {
                 val response = RetrofitClient.weatherAPIService.getCurrentWeather(apiKey, city)
                 weather = response
                 errorMessage = null
+                visitCity(city) // successful fetch, add city
             } catch (e: Exception) {
-                errorMessage = "Could not fetch weather: ${e.message}"
+                errorMessage = "Please enter a valid location"
             }
         }
     }
