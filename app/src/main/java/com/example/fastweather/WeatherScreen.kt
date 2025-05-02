@@ -91,10 +91,11 @@ fun WeatherScreen(
                     contentDescription = "Weather City Image",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(500.dp)       // lower height so it doesn’t push everything off
+                        .height(350.dp)       // lower height so it doesn’t push everything off
                 )
                 Text(
                     text = "Recent Cities",
+                    //fontSize = 16,
                     style = MaterialTheme.typography.titleLarge,
                     color = Color.White
                 )
@@ -102,7 +103,7 @@ fun WeatherScreen(
                 LazyRow(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp)
+                        .padding(vertical = 6.dp)
                 ) {
                     items(viewModel.recentCities) { cityName ->
                         AssistChip(
@@ -127,7 +128,7 @@ fun WeatherScreen(
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 16.dp)
+                        .padding(top = 8.dp)
                 )
 
                 Button(
