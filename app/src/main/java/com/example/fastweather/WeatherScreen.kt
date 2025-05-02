@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 
@@ -91,24 +92,26 @@ fun WeatherScreen(
                     contentDescription = "Weather City Image",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(500.dp)       // lower height so it doesn’t push everything off
+                        .height(350.dp)       // lower height so it doesn’t push everything off
                 )
                 Text(
                     text = "Recent Cities",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = Color.White
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.Green,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
                 )
 
                 LazyRow(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp)
+                        .padding(vertical = 6.dp)
                 ) {
                     items(viewModel.recentCities) { cityName ->
                         AssistChip(
                             onClick = { viewModel.getWeatherForCity(cityName, apiKey) },
                             label = { Text(text = cityName, color = Color.Green) },
-                            modifier = Modifier.padding(horizontal = 4.dp)
+                            modifier = Modifier.padding(horizontal = 2.dp)
                         )
                     }
                 }
@@ -127,19 +130,19 @@ fun WeatherScreen(
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 16.dp)
+                        .padding(top = 2.dp)
                 )
 
                 Button(
                     onClick = { viewModel.fetchWeather(city, apiKey) },
                     modifier = Modifier
-                        .padding(top = 8.dp)
+                        .padding(top = 2.dp)
                         .fillMaxWidth()
                 ) {
                     Text("Get Weather")
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 viewModel.weather?.let { weather ->
                     Text("Location: ${weather.location.name}, ${weather.location.country}")
