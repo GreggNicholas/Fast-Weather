@@ -109,7 +109,7 @@ fun WeatherScreen(
                         AssistChip(
                             onClick = { viewModel.getWeatherForCity(cityName, apiKey) },
                             label = { Text(text = cityName, color = Color.Green) },
-                            modifier = Modifier.padding(horizontal = 4.dp)
+                            modifier = Modifier.padding(horizontal = 2.dp)
                         )
                     }
                 }
@@ -128,19 +128,19 @@ fun WeatherScreen(
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 8.dp)
+                        .padding(top = 2.dp)
                 )
 
                 Button(
                     onClick = { viewModel.fetchWeather(city, apiKey) },
                     modifier = Modifier
-                        .padding(top = 8.dp)
+                        .padding(top = 2.dp)
                         .fillMaxWidth()
                 ) {
                     Text("Get Weather")
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 viewModel.weather?.let { weather ->
                     Text("Location: ${weather.location.name}, ${weather.location.country}")
