@@ -34,8 +34,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 
 @Composable
@@ -82,7 +85,7 @@ fun WeatherScreen(
             //  All UI goes inside the Box’s lambda
             Column(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(10.dp)
                     .align(Alignment.Center)
             )
             {
@@ -92,12 +95,13 @@ fun WeatherScreen(
                     contentDescription = "Weather City Image",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(350.dp)       // lower height so it doesn’t push everything off
+                        .height(550.dp)       // lower height so it doesn’t push everything off
                 )
                 Text(
                     text = "Recent Cities",
                     style = MaterialTheme.typography.titleMedium,
                     color = Color.Green,
+                    fontSize = 16.sp,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -110,15 +114,27 @@ fun WeatherScreen(
                     items(viewModel.recentCities) { cityName ->
                         AssistChip(
                             onClick = { viewModel.getWeatherForCity(cityName, apiKey) },
-                            label = { Text(text = cityName, color = Color.Green) },
-                            modifier = Modifier.padding(horizontal = 2.dp)
+                            label = { Text(text = cityName, color = Color.Green, fontSize = 14.sp) },
+                            modifier = Modifier.padding(horizontal = 1.dp)
+
                         )
                     }
                 }
                 OutlinedTextField(
                     value = city, //autofill based on location permissions
                     onValueChange = { city = it },  // user can still edit autofill
-                    placeholder = { Text("Enter City", color = Color.LightGray) },
+                    placeholder = {
+                        Text(
+                            "Enter City",
+                            color = Color.LightGray,
+                            fontSize = 20.sp
+                        )
+                    },
+                    textStyle = TextStyle(
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold // <-- This makes the typed text bold
+                    ),
+
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = Color.White,
                         unfocusedTextColor = Color.White,
