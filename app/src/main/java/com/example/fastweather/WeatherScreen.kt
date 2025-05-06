@@ -15,8 +15,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -24,7 +28,6 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,10 +62,6 @@ fun WeatherScreen(
                 detected?.let { city = it }
             }
         }
-    }
-    // Kick off location lookup once on first composition
-    LaunchedEffect(Unit) {
-        permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
     }
     viewModel.recentCities.forEach { city ->
         Button(
@@ -114,7 +113,13 @@ fun WeatherScreen(
                     items(viewModel.recentCities) { cityName ->
                         AssistChip(
                             onClick = { viewModel.getWeatherForCity(cityName, apiKey) },
-                            label = { Text(text = cityName, color = Color.Green, fontSize = 14.sp) },
+                            label = {
+                                Text(
+                                    text = cityName,
+                                    color = Color.Green,
+                                    fontSize = 14.sp
+                                )
+                            },
                             modifier = Modifier.padding(horizontal = 1.dp)
 
                         )
@@ -132,9 +137,19 @@ fun WeatherScreen(
                     },
                     textStyle = TextStyle(
                         fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold // <-- This makes the typed text bold
+                        fontWeight = FontWeight.Bold
                     ),
-
+                    trailingIcon = { //Button to find user's location & autofill in city input
+                        IconButton(onClick = {
+                            permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.LocationOn,
+                                contentDescription = "Use My Location",
+                                tint = Color.White
+                            )
+                        }
+                    },
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = Color.White,
                         unfocusedTextColor = Color.White,
@@ -148,7 +163,6 @@ fun WeatherScreen(
                         .fillMaxWidth()
                         .padding(top = 2.dp)
                 )
-
                 Button(
                     onClick = { viewModel.fetchWeather(city, apiKey) },
                     modifier = Modifier
