@@ -112,7 +112,10 @@ fun WeatherScreen(
                 ) {
                     items(viewModel.recentCities) { cityName ->
                         AssistChip(
-                            onClick = { viewModel.getWeatherForCity(cityName, apiKey) },
+                            onClick = {
+                                city = cityName
+                                viewModel.getWeatherForCity(cityName, apiKey)
+                            },
                             label = {
                                 Text(
                                     text = cityName,
@@ -164,7 +167,9 @@ fun WeatherScreen(
                         .padding(top = 2.dp)
                 )
                 Button(
-                    onClick = { viewModel.fetchWeather(city, apiKey) },
+                    onClick = {
+                        viewModel.fetchWeather(city, apiKey)
+                    },
                     modifier = Modifier
                         .padding(top = 2.dp)
                         .fillMaxWidth()
