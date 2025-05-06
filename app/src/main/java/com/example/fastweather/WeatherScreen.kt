@@ -5,6 +5,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -94,7 +95,7 @@ fun WeatherScreen(
                     contentDescription = "Weather City Image",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(550.dp)       // lower height so it doesn’t push everything off
+                        .height(450.dp)       // lower height so it doesn’t push everything off
                 )
                 Text(
                     text = "Recent Cities",
@@ -108,11 +109,15 @@ fun WeatherScreen(
                 LazyRow(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 6.dp)
+                        .padding(vertical = 6.dp),
+                    horizontalArrangement = Arrangement.Center
                 ) {
                     items(viewModel.recentCities) { cityName ->
                         AssistChip(
-                            onClick = { viewModel.getWeatherForCity(cityName, apiKey) },
+                            onClick = {
+                                city = cityName
+                                viewModel.getWeatherForCity(cityName, apiKey)
+                            },
                             label = {
                                 Text(
                                     text = cityName,
@@ -132,7 +137,7 @@ fun WeatherScreen(
                         Text(
                             "Enter City",
                             color = Color.LightGray,
-                            fontSize = 20.sp
+                            fontSize = 20.sp,
                         )
                     },
                     textStyle = TextStyle(
@@ -161,10 +166,12 @@ fun WeatherScreen(
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 2.dp)
+                       // .padding(top = 2.dp)
                 )
-                Button(
-                    onClick = { viewModel.fetchWeather(city, apiKey) },
+                Button( // Get weather button
+                    onClick = {
+                        viewModel.fetchWeather(city, apiKey)
+                    },
                     modifier = Modifier
                         .padding(top = 2.dp)
                         .fillMaxWidth()
@@ -179,16 +186,13 @@ fun WeatherScreen(
                     Text("Temp: ${weather.current.temp_f}°F")
                     Text("Condition: ${weather.current.condition.text}")
                     Text("Humidity: ${weather.current.humidity}%")
-
                     Image(
                         painter = rememberAsyncImagePainter("https:${weather.current.condition.icon}"),
                         contentDescription = "Weather Icon",
                         modifier = Modifier
-                            .size(64.dp)
-                            .padding(top = 8.dp)
+                            .size(40.dp)
                     )
                 }
-
                 viewModel.errorMessage?.let { error ->
                     Text("Error: $error", color = Color.Red)
                 }
