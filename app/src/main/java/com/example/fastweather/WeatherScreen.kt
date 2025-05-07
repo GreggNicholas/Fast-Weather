@@ -133,6 +133,7 @@ fun WeatherScreen(
                 OutlinedTextField(
                     value = city, //autofill based on location permissions
                     onValueChange = { city = it },  // user can still edit autofill
+                    singleLine = true,
                     placeholder = {
                         Text(
                             "Enter City",
