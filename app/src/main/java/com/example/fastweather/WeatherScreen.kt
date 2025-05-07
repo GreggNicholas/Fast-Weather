@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.AssistChip
@@ -37,13 +39,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+
 
 @Composable
 fun WeatherScreen(
@@ -51,52 +57,39 @@ fun WeatherScreen(
     apiKey: String,
 ) {
     val context = LocalContext.current
+    val keyboardController = LocalSoftwareKeyboardController.current
     var city by remember { mutableStateOf("") }
 
-    // prepare a launcher in Compose
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) {
-            // fetch the location and write into `city`
             getLastKnownCity(context) { detected ->
                 detected?.let { city = it }
             }
         }
     }
-    viewModel.recentCities.forEach { city ->
-        Button(
-            onClick = { viewModel.getWeatherForCity(city, apiKey) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 4.dp)
-        ) {
-            Text(text = city)
-        }
-    }
 
-    //  Provide a white content color, then draw your background + content
     CompositionLocalProvider(LocalContentColor provides Color.White) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black)
         ) {
-            //  All UI goes inside the Box’s lambda
             Column(
                 modifier = Modifier
                     .padding(10.dp)
                     .align(Alignment.Center)
-            )
-            {
-                // City image
+            ) {
+                // Background city image
                 Image(
                     painter = painterResource(id = R.drawable.weathercity),
                     contentDescription = "Weather City Image",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(450.dp)       // lower height so it doesn’t push everything off
+                        .height(450.dp)
                 )
+
                 Text(
                     text = "Recent Cities",
                     style = MaterialTheme.typography.titleMedium,
@@ -106,6 +99,7 @@ fun WeatherScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
 
+                // Horizontal chip list for recent cities
                 LazyRow(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -126,25 +120,20 @@ fun WeatherScreen(
                                 )
                             },
                             modifier = Modifier.padding(horizontal = 1.dp)
-
                         )
                     }
                 }
+
+                // City input with enter key handling
                 OutlinedTextField(
-                    value = city, //autofill based on location permissions
-                    onValueChange = { city = it },  // user can still edit autofill
+                    value = city,
+                    onValueChange = { city = it },
+                    singleLine = true,
                     placeholder = {
-                        Text(
-                            "Enter City",
-                            color = Color.LightGray,
-                            fontSize = 20.sp,
-                        )
+                        Text("Enter City", color = Color.LightGray, fontSize = 20.sp)
                     },
-                    textStyle = TextStyle(
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    trailingIcon = { //Button to find user's location & autofill in city input
+                    textStyle = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
+                    trailingIcon = {
                         IconButton(onClick = {
                             permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
                         }) {
@@ -155,6 +144,18 @@ fun WeatherScreen(
                             )
                         }
                     },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            keyboardController?.hide()
+                            if (city.isNotBlank()) {
+                                viewModel.fetchWeather(city, apiKey)
+                            }
+                        }
+                    ),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = Color.White,
                         unfocusedTextColor = Color.White,
@@ -164,16 +165,16 @@ fun WeatherScreen(
                         focusedPlaceholderColor = Color.LightGray,
                         unfocusedPlaceholderColor = Color.LightGray
                     ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                       // .padding(top = 2.dp)
+                    modifier = Modifier.fillMaxWidth()
                 )
-                Button( // Get weather button
+
+                // Get Weather button (in case they prefer clicking)
+                Button(
                     onClick = {
                         viewModel.fetchWeather(city, apiKey)
                     },
                     modifier = Modifier
-                        .padding(top = 2.dp)
+                        .padding(top = 8.dp)
                         .fillMaxWidth()
                 ) {
                     Text("Get Weather")
@@ -181,6 +182,7 @@ fun WeatherScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
+                // Weather results
                 viewModel.weather?.let { weather ->
                     Text("Location: ${weather.location.name}, ${weather.location.country}")
                     Text("Temp: ${weather.current.temp_f}°F")
@@ -189,10 +191,11 @@ fun WeatherScreen(
                     Image(
                         painter = rememberAsyncImagePainter("https:${weather.current.condition.icon}"),
                         contentDescription = "Weather Icon",
-                        modifier = Modifier
-                            .size(40.dp)
+                        modifier = Modifier.size(40.dp)
                     )
                 }
+
+                // Error handling
                 viewModel.errorMessage?.let { error ->
                     Text("Error: $error", color = Color.Red)
                 }
@@ -200,3 +203,4 @@ fun WeatherScreen(
         }
     }
 }
+
